@@ -18,6 +18,14 @@ export const errorMiddleware = (
 		return
 	}
 
+	if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+		res.status(StatusCode.Unauthorized).json({
+			message: 'invalid or expired token',
+			data: null,
+		})
+		return
+	}
+
 	if (error instanceof BaseError) {
 		res.status(error.statusCode).json({
 			message: error.code,

@@ -65,17 +65,10 @@ class AuthService {
       throw ErrorResponse.badRequest('refresh token required');
     }
 
-    try {
-      const decoded = verifyRefreshToken(refreshToken);
-      const user = await this.findUserById(decoded.id);
+    const decoded = verifyRefreshToken(refreshToken);
+    const user = await this.findUserById(decoded.id);
 
-      return generateTokens({ id: user.id, email: user.email, role: user.role });
-    } catch (error) {
-      if (error instanceof ErrorResponse) {
-        throw error;
-      }
-      throw ErrorResponse.unauthorized('invalid or expired refresh token');
-    }
+    return generateTokens({ id: user.id, email: user.email, role: user.role });
   }
 
   async getProfile(userId: string): Promise<UserResponseDto> {

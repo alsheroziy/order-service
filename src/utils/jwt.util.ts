@@ -1,5 +1,6 @@
 import { environments } from '@/config/enviroment';
 import { UserRole } from '@/enums/user.enum';
+import ErrorResponse from '@/utils/errorResponse';
 import jwt from 'jsonwebtoken';
 
 export interface ITokenPayload {
@@ -21,11 +22,19 @@ export const generateTokens = (payload: ITokenPayload) => {
 };
 
 export const verifyAccessToken = (token: string): ITokenPayload => {
-  return jwt.verify(token, environments.JWT_ACCESS_SECRET) as ITokenPayload;
+  try {
+    return jwt.verify(token, environments.JWT_ACCESS_SECRET) as ITokenPayload;
+  } catch {
+    throw ErrorResponse.unauthorized('invalid or expired access token');
+  }
 };
 
 export const verifyRefreshToken = (token: string): ITokenPayload => {
-  return jwt.verify(token, environments.JWT_REFRESH_SECRET) as ITokenPayload;
+  try {
+    return jwt.verify(token, environments.JWT_REFRESH_SECRET) as ITokenPayload;
+  } catch {
+    throw ErrorResponse.unauthorized('invalid or expired refresh token');
+  }
 };
 
 export default {
