@@ -24,3 +24,5 @@ export const errorMiddleware = (
 		data: null,
 	})
 }
+
+export default errorMiddleware
