@@ -35,3 +35,5 @@ export class ErrorResponse extends Error {
     return new ErrorResponse(msg, 500);
   }
 }
+
+export default ErrorResponse;

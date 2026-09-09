@@ -8,5 +8,7 @@ export enum ErrorCode {
     IdempotencyKeyMissing = 'IDEMPOTENCY_KEY_MISSING',
     OrderAlreadyCancelled = 'ORDER_ALREADY_CANCELLED',
     OrderCannotBeCancelled = 'ORDER_CANNOT_BE_CANCELLED',
+    Conflict = 'CONFLICT',
+    UserNotFound = 'USER_NOT_FOUND',
     InternalServerError = 'INTERNAL_SERVER_ERROR',
 }

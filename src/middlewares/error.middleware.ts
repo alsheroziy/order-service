@@ -1,6 +1,7 @@
 import { ErrorCode } from '@/enums/error-ode.enum'
 import { StatusCode } from '@/enums/status-code.enum'
 import BaseError from '@/errors/base.error'
+import ErrorResponse from '@/utils/errorResponse'
 import { NextFunction, Request, Response } from 'express'
 
 export const errorMiddleware = (
@@ -9,6 +10,14 @@ export const errorMiddleware = (
 	res: Response,
 	_next: NextFunction,
 ): void => {
+	if (error instanceof ErrorResponse) {
+		res.status(error.statusCode).json({
+			message: error.message,
+			data: null,
+		})
+		return
+	}
+
 	if (error instanceof BaseError) {
 		res.status(error.statusCode).json({
 			message: error.code,
