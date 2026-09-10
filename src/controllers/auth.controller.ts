@@ -27,3 +27,8 @@ export const logout = asyncHandler(async (_req: Request, res: Response): Promise
   clearCookie(res, 'refreshToken');
   res.status(StatusCode.Ok).json({ message: 'Logged out successfully' });
 });
+
+export const getMe = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const user = await authService.getProfile(req.user!.id);
+  res.status(StatusCode.Ok).json(user);
+});
