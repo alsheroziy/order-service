@@ -28,7 +28,7 @@ class AuthService {
         return user;
     }
 
-    async register({ email, password, full_name }: RegisterDto): Promise<AuthResponseDto> {
+    async register({ email, password, full_name, role }: RegisterDto): Promise<AuthResponseDto> {
         const userExists = await userRepo.findByEmail(email);
         if (userExists) {
             throw ErrorResponse.conflict('email already exists');
@@ -41,6 +41,7 @@ class AuthService {
             email,
             password_hash: hashedPassword,
             full_name,
+            role,
         });
 
         return this.buildAuthResponse(newUser);
