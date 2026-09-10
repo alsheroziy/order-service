@@ -149,6 +149,51 @@ class OrderService {
             client.release();
         }
     }
+
+    async cancelExpiredOrders(): Promise<number> {
+        const expiredOrders = await orderRepo.findExpiredPendingOrders();
+        if (expiredOrders.length === 0) {
+            return 0;
+        }
+
+        let cancelledCount = 0;
+
+        for (const order of expiredOrders) {
+            const client = await pool.connect();
+            try {
+                await client.query('BEGIN');
+
+                const query = `
+                  update orders
+                  set status = 'cancelled', updated_at = now()
+                  where id = $1 and status = 'pending'
+                  returning id;
+                `;
+                const { rows } = await client.query(query, [order.id]);
+
+                if (rows.length > 0) {
+                    const items = await orderRepo.findItemsByOrderId(order.id, client);
+                    await Promise.all(
+                        items.map((item) =>
+                            productRepo.incrementStock(item.product_id, item.quantity, client),
+                        ),
+                    );
+                    await client.query('COMMIT');
+                    await this.invalidateCaches(items.map((i) => i.product_id));
+                    cancelledCount++;
+                } else {
+                    await client.query('ROLLBACK');
+                }
+            } catch (error) {
+                await client.query('ROLLBACK');
+                console.error(`Failed to cancel expired order ${order.id}:`, error);
+            } finally {
+                client.release();
+            }
+        }
+
+        return cancelledCount;
+    }
 }
 
 export default new OrderService();
