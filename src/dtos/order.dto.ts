@@ -9,6 +9,21 @@ export interface CreateOrderDto {
   items: OrderItemInputDto[];
 }
 
+export interface CreateOrderDbDto {
+  user_id: string;
+  idempotency_key: string;
+  status: OrderStatus;
+  total_amount: number;
+  expires_at: Date;
+}
+
+export interface CreateOrderItemDbDto {
+  order_id: string;
+  product_id: string;
+  quantity: number;
+  unit_price: number;
+}
+
 export interface OrderResponseDto {
   id: string;
   user_id: string;
